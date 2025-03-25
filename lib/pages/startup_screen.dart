@@ -125,7 +125,7 @@ class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
           setState(() {});
         }).catchError(
           (Object e){
-          print(e);
+            
           },
         );
     }

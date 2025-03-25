@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import '../pages/startup_screen.dart';
+import '../pages/login.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MainApp());
 }
 
@@ -11,12 +18,14 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Recieptify',
+      title: 'Receiptify',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 13, 19, 33),
         useMaterial3: true,
       ),
-      home: StartupPage(),
+      home: Scaffold(
+        body: LoginPage()
+      ),
     );
   }
 }

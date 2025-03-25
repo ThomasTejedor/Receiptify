@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import '../pages/startup_screen.dart';
+import '../pages/login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -18,10 +20,12 @@ class MainApp extends StatelessWidget {
     return MaterialApp(
       title: 'Receiptify',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 13, 19, 33),
         useMaterial3: true,
       ),
-      home: StartupPage(),
+      home: Scaffold(
+        body: LoginPage()
+      ),
     );
   }
 }

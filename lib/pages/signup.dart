@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
+class _SignupPageState extends State<SignupPage> with WidgetsBindingObserver {
   final _formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -21,8 +20,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   }
 
   Widget _buildUI() {
-    String _email = '';
-    String _password = '';
+    Map userData = {};
 
     return SafeArea(
       child: Column(
@@ -45,7 +43,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               ),
             ),
           ),
-          //Area for user input and login button
+          //Area for user input and Signup button
           Padding(
             padding: EdgeInsets.symmetric(
               vertical: 15,
@@ -66,11 +64,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                         EmailValidator( 
                             errorText: 
                                 'Please correct email field'), 
-                      ]).call,
-                      //Saves the user inputted email into the variable _email
-                      onSaved: (value) {
-                        _email = value!;
-                      },
+                      ]).call, 
                       decoration: InputDecoration( 
                         hintText: 'Email', 
                         labelText: 'Email', 
@@ -104,10 +98,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                         PatternValidator(r'(?=.*?[#!@$%^&*-])', 
                           errorText: 
                             'Password must contain atleast one special character') 
-                      ]).call,
-                      onSaved: (value) {
-                        _password = value!;
-                      },
+                      ]).call, 
                       decoration: InputDecoration( 
                         hintText: 'Password', 
                         labelText: 'Password', 
@@ -138,8 +129,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                         ),
                         onPressed: () {
                           if (_formkey.currentState!.validate()) {
-                            _formkey.currentState!.save();
-                            FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
+                            print('form submitted');
                           }
                         },
                         child: const Text('Login')
@@ -153,16 +143,16 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                       text: TextSpan(
                         children: [
                           TextSpan(
-                            text: 'Dont have an account?',
+                            text: 'Already have an account?',
                             style: TextStyle(color: const Color.fromARGB(255, 62, 92, 118)),
                           ),
                           TextSpan(
-                            text: '  Sign up',
+                            text: '  Log in',
                             style: TextStyle(color: Colors.blue),
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 _formkey.currentState?.reset();
-                                context.go('/signup');
+                                context.go('/login');
                               },
                           ),
                         ],

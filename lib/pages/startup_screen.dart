@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
+import 'package:go_router/go_router.dart';
 
 class StartupPage extends StatefulWidget {
   const StartupPage({super.key});
@@ -65,7 +66,7 @@ class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
               children: [
                 //Button to go the profile
                 IconButton(
-                  onPressed: () async {},
+                  onPressed: () async {context.go('/login');},
                   iconSize: MediaQuery.sizeOf(context).height *.05,
                   icon: const Icon(
                     Icons.account_circle

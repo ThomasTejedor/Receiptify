@@ -97,13 +97,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                       obscureText: true,
                       validator: MultiValidator([ 
                         RequiredValidator( 
-                          errorText: 'Please enter a Password'), 
-                        MinLengthValidator(8, 
-                          errorText: 
-                            'Password must be atleast 8 digits'), 
-                        PatternValidator(r'(?=.*?[#!@$%^&*-])', 
-                          errorText: 
-                            'Password must contain atleast one special character') 
+                          errorText: 'Please enter a Password') 
                       ]).call,
                       onSaved: (value) {
                         _password = value!;
@@ -139,7 +133,8 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                         onPressed: () {
                           if (_formkey.currentState!.validate()) {
                             _formkey.currentState!.save();
-                            FirebaseAuth.instance.createUserWithEmailAndPassword(email: _email, password: _password);
+                            FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password); 
+                            context.pop();
                           }
                         },
                         child: const Text('Login')
@@ -162,7 +157,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 _formkey.currentState?.reset();
-                                context.go('/signup');
+                                context.pushReplacement('/signup');
                               },
                           ),
                         ],

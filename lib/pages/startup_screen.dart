@@ -66,7 +66,7 @@ class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
               children: [
                 //Button to go the profile
                 IconButton(
-                  onPressed: () async {context.go('/login');},
+                  onPressed: () async {context.push('/login');},
                   iconSize: MediaQuery.sizeOf(context).height *.05,
                   icon: const Icon(
                     Icons.account_circle

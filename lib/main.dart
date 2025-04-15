@@ -19,7 +19,7 @@ final GoRouter _router = GoRouter(
     GoRoute(
       path: '/',
       builder: (BuildContext context, GoRouterState state) {
-        return const SignupPage();
+        return const StartupPage();
       },
       routes: <RouteBase>[
         GoRoute(
@@ -47,6 +47,10 @@ class MainApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Receiptify',
       theme: ThemeData(
+        textTheme: const TextTheme(
+          headlineLarge: TextStyle(fontSize: 50, color: Color.fromARGB(255, 240, 235, 216), fontWeight: FontWeight.bold),
+          bodyLarge: TextStyle(fontSize: 16, color: Color.fromARGB(255, 240, 235, 216)),
+        ),
         scaffoldBackgroundColor: const Color.fromARGB(255, 13, 19, 33),
         useMaterial3: true,
       ),

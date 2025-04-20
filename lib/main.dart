@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../pages/startup_screen.dart';
 import '../pages/login.dart';
 import '../pages/signup.dart';
+import '../pages/profile.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:go_router/go_router.dart';
@@ -33,6 +34,12 @@ final GoRouter _router = GoRouter(
           builder: (BuildContext context, GoRouterState state) {
             return const SignupPage();
           },
+        ),
+        GoRoute(
+          path: 'profile',
+          builder: (BuildContext context, GoRouterState state) {
+            return const ProfilePage();
+          }
         ),
       ],
     ),

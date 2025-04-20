@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../services/auth_service.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -13,6 +13,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   final _formkey = GlobalKey<FormState>();
+  final _authService = AuthService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,7 +24,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   Widget _buildUI() {
     String _email = '';
     String _password = '';
-
+    
     return SafeArea(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -130,11 +131,14 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                           foregroundColor: const Color.fromARGB(255, 13, 19, 33),
                           
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formkey.currentState!.validate()) {
                             _formkey.currentState!.save();
-                            FirebaseAuth.instance.signInWithEmailAndPassword(email: _email, password: _password); 
-                            context.pop();
+                            await _authService.login(email: _email, password: _password); 
+                            if(mounted){
+                              FocusScope.of(context).unfocus();
+                              context.pop();
+                            }
                           }
                         },
                         child: const Text('Login')

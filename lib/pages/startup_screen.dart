@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 class StartupPage extends StatefulWidget {
   const StartupPage({super.key});
@@ -84,18 +87,30 @@ class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
                         Gal.putImage(
                           picture.path,
                         );
+                        File userPicture = File(picture.path);
+                        if(mounted) {
+                          context.push('/checkbox', extra: userPicture);
+                        }
                       },
                       iconSize: MediaQuery.sizeOf(context).height *.10,
                       icon: const Icon(
                         Icons.circle_outlined,
-                        color: Colors.purple,
                       ),
                     ),
                   ),
                 ),
                 //Button to use photos in the gallery instead of taking a photo
                 IconButton(
-                  onPressed: () async {},
+                  onPressed: () async {
+                    final pickedFile = 
+                      await ImagePicker().pickImage(source: ImageSource.gallery);
+                    if(pickedFile != null) {
+
+                      if(mounted) {
+                        context.push('/checkbox', extra: File(pickedFile.path));
+                      }
+                    }
+                  },
                   iconSize: MediaQuery.sizeOf(context).height *.05,
                   icon: const Icon(
                     Icons.add_photo_alternate_rounded

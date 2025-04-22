@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import '../pages/startup_screen.dart';
 import '../pages/login.dart';
 import '../pages/signup.dart';
 import '../pages/profile.dart';
+import '../pages/checkbox_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:go_router/go_router.dart';
@@ -41,6 +44,13 @@ final GoRouter _router = GoRouter(
             return const ProfilePage();
           }
         ),
+        GoRoute(
+          path: 'checkbox',
+          builder: (BuildContext context, GoRouterState state) {
+            final File? userFile = state.extra as File?;
+            return CheckboxPage(imageFile: userFile);
+          }
+        ),
       ],
     ),
   ],
@@ -54,11 +64,30 @@ class MainApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Receiptify',
       theme: ThemeData(
-        textTheme: const TextTheme(
-          headlineLarge: TextStyle(fontSize: 50, color: Color.fromARGB(255, 240, 235, 216), fontWeight: FontWeight.bold),
-          bodyLarge: TextStyle(fontSize: 16, color: Color.fromARGB(255, 240, 235, 216)),
+        iconTheme: IconThemeData(
+          color: const Color.fromARGB(255, 185, 178, 231)
         ),
-        scaffoldBackgroundColor: const Color.fromARGB(255, 13, 19, 33),
+        appBarTheme: AppBarTheme(
+          iconTheme: IconThemeData(
+            color: Color.fromARGB(255, 240, 235, 216)
+          ),
+          color: const Color.fromARGB(255, 20, 33, 61),
+          titleTextStyle: TextStyle(
+            fontSize: 32,
+            color: Color.fromARGB(255, 240, 235, 216),
+          ),
+          centerTitle: true
+        ),
+        textTheme: const TextTheme(
+          headlineLarge: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+          headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          bodyLarge: TextStyle(fontSize: 16),
+          bodyMedium: TextStyle(fontSize: 13),
+        ).apply(
+          bodyColor: const Color.fromARGB(255, 240, 235, 216),
+          displayColor: const Color.fromARGB(255, 240, 235, 216)
+        ),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 20, 21, 24),
         useMaterial3: true,
       ),
       routerConfig: _router,

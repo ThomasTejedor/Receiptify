@@ -17,8 +17,10 @@ class CheckboxWidget {
 
   Widget getCheckboxWidget(State<CheckboxPage> state) {
     
-    final _itemText = TextEditingController();
-    final _priceText = TextEditingController();
+    final _itemText = TextEditingController(text: description);
+    final _priceText = TextEditingController(text: amount.toStringAsFixed(2));
+    final _itemTextState = ObjectKey(TextFormField);
+    final _priceState = ObjectKey(TextFormField);
 
     return InkWell(
       onTap: () {
@@ -38,8 +40,28 @@ class CheckboxWidget {
             ? Row(children: [
               
               //Edit Item Form
-
-
+              SizedBox(
+                height: 40,
+                width: 150,
+                child: TextFormField (
+                  textAlignVertical: TextAlignVertical.center,
+                  key: _itemTextState,
+                  controller: _itemText,
+                  decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(3),
+                  hintText: 'Item', 
+                  labelText: 'Item', 
+                  errorStyle: TextStyle(fontSize: 10.0), 
+                  border: OutlineInputBorder( 
+                    borderSide: BorderSide(color: Colors.red), 
+                    borderRadius: 
+                      BorderRadius.all(
+                        Radius.circular(9.0)
+                      )
+                    ), 
+                  ), 
+                ),
+              ),
               //Add Changes
               IconButton(
                 icon: const Icon(
@@ -48,6 +70,7 @@ class CheckboxWidget {
                 onPressed: () {
                   state.setState(() {
                     editMode = false;
+                    description = _itemText.text;
                   });
                 }
               ),
@@ -84,7 +107,57 @@ class CheckboxWidget {
             ]),
             
             //Right side of clickable row
-            Row(
+            editMode
+            //Edit mode
+            ? Row( 
+              children: [ 
+                
+                //Delete button
+                IconButton(
+                  icon: const Icon(
+                    Icons.remove_circle_outline_outlined
+                  ),
+                  onPressed: () {
+
+                  }
+                ),
+                
+                //Include Item or not
+                Checkbox(
+                  value: checked,
+                  onChanged: (newValue) {
+                    state.setState(() {
+                      toggleChecked(newValue!);
+                      print(total);
+                    });
+                  },
+                ),
+                //Edit Price of item
+                SizedBox(
+                  height: 40,
+                  width: 50,
+                  child: TextFormField (
+                    textAlignVertical: TextAlignVertical.center,
+                    key: _priceState,
+                    controller: _priceText,
+                    decoration: InputDecoration(
+                      contentPadding: EdgeInsets.all(3),
+                      hintText: 'Item', 
+                      labelText: 'Item', 
+                      errorStyle: TextStyle(fontSize: 10.0), 
+                      border: OutlineInputBorder( 
+                        borderSide: BorderSide(color: Colors.red), 
+                        borderRadius: 
+                          BorderRadius.all(
+                            Radius.circular(9.0)
+                          )
+                      ), 
+                    ), 
+                  ),
+                ),
+              ]
+            )
+            : Row(
               children: [ 
                 
                 //Delete button
@@ -112,6 +185,7 @@ class CheckboxWidget {
                 Text(
                   "\$${amount.toStringAsFixed(2)}"
                 ),
+
               ]
             )
           ],

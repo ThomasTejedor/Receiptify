@@ -1,0 +1,2 @@
+C:/Users/tctej/Desktop/CS Mobile Application/Receiptify/android/app/.cxx/Debug/101x3d70/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/tctej/Desktop/CS Mobile Application/Receiptify/android/app/.cxx/Debug/101x3d70/armeabi-v7a/CMakeFiles/rebuild_cache.dir

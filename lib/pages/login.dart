@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:form_field_validator/form_field_validator.dart';
@@ -14,6 +15,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
   final _formkey = GlobalKey<FormState>();
   final _authService = AuthService();
+  bool _invalidEntry = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,10 +23,18 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
     );
   }
 
+  void movePage() async {
+    await Future.delayed(const Duration(milliseconds: 10));
+    if(mounted) {
+      context.pop();
+    }
+  }
   Widget _buildUI() {
     String _email = '';
     String _password = '';
-    
+    if(_authService.currentUser != null) {
+      movePage();
+    }
     return SafeArea(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -85,7 +95,7 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                             BorderSide(color: Colors.red), 
                           borderRadius: BorderRadius.all( 
                             Radius.circular(9.0)
-                          )   
+                          )
                         )
                       )
                     )
@@ -119,7 +129,10 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                         ), 
                       ), 
                     ), 
-                  ), 
+                  ),
+                  _invalidEntry
+                  ? Text("Invalid username or password", style: TextStyle(color: Colors.red))
+                  : Text(""),
                   //Create the Login Button
                   Padding(
                     padding: const EdgeInsets.only(top: 12, bottom: 5),
@@ -134,10 +147,13 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                         onPressed: () async {
                           if (_formkey.currentState!.validate()) {
                             _formkey.currentState!.save();
-                            await _authService.login(email: _email, password: _password); 
-                            if(mounted){
-                              FocusScope.of(context).unfocus();
-                              context.pop();
+                            try {
+                              await _authService.login(email: _email, password: _password); 
+                              setState(() {_invalidEntry = false;});
+                            } on FirebaseAuthException catch (e) {
+                              if(e.code == 'invalid-credential'){
+                                setState(() {_invalidEntry = true;});
+                              }
                             }
                           }
                         },
@@ -161,7 +177,9 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 _formkey.currentState?.reset();
-                                context.pushReplacement('/signup');
+                                context.push('/signup').whenComplete(() {
+                                  setState(() {});
+                                });
                               },
                           ),
                         ],

@@ -3,7 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/auth_service.dart';
 import '../services/db_service.dart';
+import '../services/password_validator.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -19,7 +21,9 @@ class _SignupPageState extends State<SignupPage> with WidgetsBindingObserver {
   final _passwordController = TextEditingController();
   final _emailController = TextEditingController();
   final _dbService = dbService.value; 
-
+  final _authService = AuthService();
+  bool _usernameAvailable = true; 
+  bool _emailAvailable = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,32 +63,33 @@ class _SignupPageState extends State<SignupPage> with WidgetsBindingObserver {
                     //Username Field
                     TextFormField( 
                       controller: _usernameController,
-                      validator: MultiValidator([ 
-                        RequiredValidator( 
-                          errorText: 'Please enter a Username'), 
-                        MinLengthValidator(8, 
-                          errorText:
-                            'Username must be at least 8 digits'),
-                        MaxLengthValidator(16,
-                          errorText:
-                            'Username cannot be longer than 16 digits'), 
-                        PatternValidator(r'^[a-zA-Z0-9]+$', 
-                          errorText:
-                            'Username cannot contain any special characters'),
-                      ]).call,
+                      validator: 
+                       MultiValidator([ 
+                          RequiredValidator( 
+                            errorText: 'Please enter a Username'), 
+                          MinLengthValidator(8, 
+                            errorText:
+                              'Username must be at least 8 digits'),
+                          MaxLengthValidator(16,
+                            errorText:
+                              'Username cannot be longer than 16 digits'), 
+                          PatternValidator(r'^[a-zA-Z0-9]+$', 
+                            errorText:
+                              'Username cannot contain any special characters'),
+                        ]).call,
                       decoration: InputDecoration( 
-                      hintText: 'Username', 
-                      labelText: 'Username', 
-                      prefixIcon: Icon( 
-                        Icons.account_circle_outlined, 
-                      ), 
-                      errorStyle: TextStyle(fontSize: 10.0), 
-                      border: OutlineInputBorder( 
-                        borderSide: BorderSide(color: Colors.red), 
-                        borderRadius: 
-                          BorderRadius.all(
-                            Radius.circular(9.0)
-                          )
+                        hintText: 'Username', 
+                        labelText: 'Username', 
+                        prefixIcon: Icon( 
+                          Icons.account_circle_outlined, 
+                        ), 
+                        errorStyle: TextStyle(fontSize: 10.0), 
+                        border: OutlineInputBorder( 
+                          borderSide: BorderSide(color: Colors.red), 
+                          borderRadius: 
+                            BorderRadius.all(
+                              Radius.circular(9.0)
+                            )
                         ), 
                       ), 
                     ), 
@@ -129,7 +134,7 @@ class _SignupPageState extends State<SignupPage> with WidgetsBindingObserver {
                             'Password must be atleast 8 digits'), 
                         PatternValidator(r'(?=.*?[?#!@$%^&*-])', 
                           errorText: 
-                            'Password must contain atleast one special character') 
+                            'Password must contain atleast one special character')
                       ]).call,
                       decoration: InputDecoration( 
                         hintText: 'Password', 
@@ -167,6 +172,8 @@ class _SignupPageState extends State<SignupPage> with WidgetsBindingObserver {
                         ), 
                       ), 
                     ),
+                    _usernameAvailable ? const Text("") : const Text("Username not available", style: TextStyle(color: Colors.red)),
+                    _emailAvailable ? const Text("") : const Text("Email already in use", style: TextStyle(color: Colors.red))
                   ],
                 ),
               ),
@@ -184,23 +191,36 @@ class _SignupPageState extends State<SignupPage> with WidgetsBindingObserver {
                         foregroundColor: const Color.fromARGB(255, 13, 19, 33), 
                       ),
                       onPressed: () async {
-                        
-                        if(await _dbService.availableUsername(_usernameController.text)) {
-                          print("username available");
-                        } else {
-                          print("username not available");
+                        bool currUserAvail = await _dbService.availableUsername(_usernameController.text);
+                        bool currEmailAvail = await _dbService.availableEmail(_emailController.text);
+                        if(currUserAvail != _usernameAvailable) {
+                          setState(() {_usernameAvailable = currUserAvail;});
+                        }
+                        if(currEmailAvail != _emailAvailable) {
+                          setState(() {_emailAvailable = currEmailAvail;});
+                        }
+                        if(!currUserAvail || !_emailAvailable) {
+                          return; 
                         }
                         if (_formkey.currentState!.validate()) {
                           _formkey.currentState!.save();
                           try {
-                            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                            await _authService.signup(
                               email: _emailController.text, password: _passwordController.text
                             );
-                            print("successful signup");
+                            await _dbService.createUserDoc(
+                              email: _emailController.text,
+                              username: _usernameController.text,
+                              uuid: _authService.currentUser!.uid
+                            );
+                            if(mounted){
+                              context.pop();
+                            }
                           } on FirebaseAuthException catch (e) {
                             if(e.code == 'email-already-in-use') {
-                              
-                              print("in use email");
+                              setState(() {
+                                _emailAvailable = false; 
+                              });
                             }
                           }
                         }
@@ -225,7 +245,7 @@ class _SignupPageState extends State<SignupPage> with WidgetsBindingObserver {
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
                                 _formkey.currentState?.reset();
-                                context.pushReplacement('/login');
+                                context.pop();
                               },
                           ),
                         ],

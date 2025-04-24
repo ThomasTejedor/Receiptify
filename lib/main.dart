@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import '../pages/startup_screen.dart';
 import '../pages/login.dart';
@@ -9,6 +7,8 @@ import '../pages/checkbox_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:go_router/go_router.dart';
+
+import 'widgets/checkbox_widget.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,8 +47,7 @@ final GoRouter _router = GoRouter(
         GoRoute(
           path: 'checkbox',
           builder: (BuildContext context, GoRouterState state) {
-            final File? userFile = state.extra as File?;
-            return CheckboxPage(imageFile: userFile);
+            return CheckboxPage(userData: state.extra as PassData);
           }
         ),
       ],
@@ -81,6 +80,7 @@ class MainApp extends StatelessWidget {
         textTheme: const TextTheme(
           headlineLarge: TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
           headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          headlineSmall: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           bodyLarge: TextStyle(fontSize: 16),
           bodyMedium: TextStyle(fontSize: 13),
         ).apply(

@@ -1,28 +1,43 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:form_field_validator/form_field_validator.dart';
 
 import '../pages/checkbox_screen.dart';
 
+class PassData {
+  PassData(this.userPicture, this.items);
+  File? userPicture;
+  List<CheckboxWidget>? items;
+}
+
 class CheckboxList {
 
-  CheckboxList();
+  CheckboxList(this.items) {
+    size = items.length;
+  }
 
-  final List<CheckboxWidget> _items = [CheckboxWidget(1.538, "hello"),CheckboxWidget(2, "test"),CheckboxWidget(3, "hello1"),CheckboxWidget(1, "test1"),CheckboxWidget(1, "hello2"),CheckboxWidget(0, "test2"),CheckboxWidget(0, "hello3"),CheckboxWidget(0, "test3"),CheckboxWidget(0, "hello"),CheckboxWidget(0, "test"),CheckboxWidget(0, "hello"),CheckboxWidget(0, "test")];
+  List<CheckboxWidget> items;
   double total = 0.0;
-  int size = 12; 
+  late int size;
+  int numChecked = 0;
+  CheckboxWidget? idEditing;
   //Adds checkbox to the end of the list
   void addCheckbox(CheckboxWidget value) {
-    _items.add(value);
+    items.add(value);
     size++;
   }
-
-  //returns the checkbox at index
-  CheckboxWidget getCheckbox(int index) {
-    return _items[index];
-  }
   
+  CheckboxWidget getCheckbox(int index) {
+    return items[index];
+  }
   //removes the checkbox given
   void removeCheckbox(CheckboxWidget widget) {
-    _items.remove(widget);
+    print(widget.checked);
+    if(widget.checked) {
+      numChecked--;
+    }
+    items.remove(widget);
     size--;
   }
 
@@ -41,7 +56,7 @@ class CheckboxWidget {
     this.description,
   );
 
-  Widget getCheckboxWidget(State<CheckboxPage> state, CheckboxList list) {
+  Widget getCheckboxWidget(State<CheckboxPage> state, CheckboxList list, GlobalKey<FormState> _formkey) {
     
     final _itemText = TextEditingController(text: description);
     final _priceText = TextEditingController(text: amount.toStringAsFixed(2));
@@ -51,6 +66,7 @@ class CheckboxWidget {
     return InkWell(
       onTap: () {
         editMode
+          //nothing happens if you are in edit mode
           ? ()
           : state.setState(() {
             checked = !checked;
@@ -76,6 +92,13 @@ class CheckboxWidget {
                 width: 150,
                 child: TextFormField (
                   textAlignVertical: TextAlignVertical.center,
+                  validator: MultiValidator([
+                    RequiredValidator( 
+                      errorText: 'Please enter an item'), 
+                    MaxLengthValidator(20,
+                      errorText:
+                        'Username cannot be longer than 16 digits'), 
+                  ]).call,
                   key: _itemTextState,
                   controller: _itemText,
                   decoration: InputDecoration(
@@ -93,23 +116,26 @@ class CheckboxWidget {
                   ), 
                 ),
               ),
+
               //Add Changes
               IconButton(
                 icon: const Icon(
                   Icons.check
                 ),
                 onPressed: () {
-                  state.setState(() {
-                    editMode = false;
-                    description = _itemText.text;
-                    double oldAmt = amount;
-                    amount = double.parse(_priceText.text);
-                    amount = double.parse(amount.toStringAsFixed(2));
-                    if(checked) {
-                      list.total -= oldAmt;
-                      list.total += amount;
-                    } 
-                  });
+                  if(_formkey.currentState!.validate()){
+                    state.setState(() {
+                      editMode = false;
+                      description = _itemText.text;
+                      double oldAmt = amount;
+                      amount = double.parse(_priceText.text);
+                      amount = double.parse(amount.toStringAsFixed(2));
+                      if(checked) {
+                        list.total -= oldAmt;
+                        list.total += amount;
+                      } 
+                    });
+                  }
                 }
               ),
               
@@ -138,6 +164,10 @@ class CheckboxWidget {
                 ),
                 onPressed: () {
                   state.setState(() {
+                    if(list.idEditing != null) {
+                      list.idEditing!.editMode = false;
+                    }
+                    list.idEditing = this;
                     editMode = true;
                   });
                 }
@@ -157,7 +187,9 @@ class CheckboxWidget {
                   ),
                   onPressed: () {
                     state.setState(() {
-                      list.total -= amount;
+                      if(checked) {
+                        list.total -= amount;
+                      }
                       list.removeCheckbox(this);
                     });
                   }
@@ -171,6 +203,16 @@ class CheckboxWidget {
                     textAlignVertical: TextAlignVertical.center,
                     key: _priceState,
                     controller: _priceText,
+                    validator: MultiValidator([
+                      RequiredValidator( 
+                        errorText: 'Enter price'), 
+                      MaxLengthValidator(8,
+                        errorText:
+                          'Do not enter more than 8 digits'),
+                      PatternValidator(r'(^\d+(\.\d{2})?$)', 
+                        errorText: 
+                          '#.##')
+                    ]).call,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(3),
                       hintText: 'Item', 
@@ -198,8 +240,10 @@ class CheckboxWidget {
                     state.setState(() {
                       checked = !checked;
                       if(checked) {
+                        list.numChecked++;
                         list.total += amount;
                       } else {
+                        list.numChecked--;
                         list.total -= amount; 
                       }
                     });

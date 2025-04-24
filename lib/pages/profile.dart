@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
+import '../services/db_service.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -14,25 +15,31 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
 
   final _authService = authService.value;
+  final _dbService = dbService.value;
+  late User? user;
+  String username = "Loading...";
   //Moves the page to login if you are not 
   void movePage() async {
     await Future.delayed(const Duration(milliseconds: 10));
     if(mounted) {
-      context.push('/login').then((value) => {
-        //check if the user is still logged in after returning from a pushed page
-        setState(() {})
+      await context.push('/login').whenComplete(() {
+        setState (() {});
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    if(_authService.currentUser == null){
+    user = _authService.currentUser;
+    if(user == null){
       movePage();
-    } else {
-      print("User is logged in ${_authService.currentUser!.email} ");
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator())
+      );
     }
-
+    if(username == "Loading...") {
+      _dbService.getUsername(user!.uid).then((value) {setState(() {username = value;});});
+    }
     return Scaffold(
       body: _buildUI(),
     );
@@ -40,18 +47,30 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _buildUI() {
     return SafeArea(
-      child: 
-        IconButton(
-          onPressed: () async {
-            await _authService.signOut();
-            if(mounted) {movePage();}
-          },
-          iconSize: MediaQuery.sizeOf(context).height *.05,
-          icon: const Icon(
-            Icons.account_circle
-
+      child: Column(
+        children: [
+          Center(
+            child: Icon(
+              Icons.account_circle,
+              size: MediaQuery.sizeOf(context).height *.25
+            ),
           ),
-        ),
-      );
+          Text(
+            username
+          ),
+          ElevatedButton.icon(
+            onPressed: () {
+              setState(() async {
+                await _authService.signOut();
+                setState(() {});
+              });
+            },
+            icon: Icon(Icons.logout),
+            label: Text('Logout'),
+            iconAlignment: IconAlignment.start,
+          ),
+        ]
+      ),
+    );
   }
 }

@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:gal/gal.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:receiptify/widgets/checkbox_widget.dart';
+
+import '../services/ocr_service.dart';
 
 class StartupPage extends StatefulWidget {
   const StartupPage({super.key});
@@ -88,8 +91,10 @@ class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
                           picture.path,
                         );
                         File userPicture = File(picture.path);
+                        List<CheckboxWidget>? list = await OcrService.processImage(userPicture); 
+                        PassData myData = PassData(userPicture, list);
                         if(mounted) {
-                          context.push('/checkbox', extra: userPicture);
+                          context.push('/checkbox', extra: myData);
                         }
                       },
                       iconSize: MediaQuery.sizeOf(context).height *.10,
@@ -105,9 +110,11 @@ class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
                     final pickedFile = 
                       await ImagePicker().pickImage(source: ImageSource.gallery);
                     if(pickedFile != null) {
-
+                      File userPicture = File(pickedFile.path);
+                      List<CheckboxWidget>? list = await OcrService.processImage(userPicture); 
+                      PassData myData = PassData(userPicture, list);
                       if(mounted) {
-                        context.push('/checkbox', extra: File(pickedFile.path));
+                        context.push('/checkbox', extra: myData);
                       }
                     }
                   },

@@ -2,9 +2,35 @@ import 'package:flutter/material.dart';
 
 import '../pages/checkbox_screen.dart';
 
+class CheckboxList {
+
+  CheckboxList();
+
+  final List<CheckboxWidget> _items = [CheckboxWidget(1.538, "hello"),CheckboxWidget(2, "test"),CheckboxWidget(3, "hello1"),CheckboxWidget(1, "test1"),CheckboxWidget(1, "hello2"),CheckboxWidget(0, "test2"),CheckboxWidget(0, "hello3"),CheckboxWidget(0, "test3"),CheckboxWidget(0, "hello"),CheckboxWidget(0, "test"),CheckboxWidget(0, "hello"),CheckboxWidget(0, "test")];
+  double total = 0.0;
+  int size = 12; 
+  //Adds checkbox to the end of the list
+  void addCheckbox(CheckboxWidget value) {
+    _items.add(value);
+    size++;
+  }
+
+  //returns the checkbox at index
+  CheckboxWidget getCheckbox(int index) {
+    return _items[index];
+  }
+  
+  //removes the checkbox given
+  void removeCheckbox(CheckboxWidget widget) {
+    _items.remove(widget);
+    size--;
+  }
+
+}
+
+//Widget for the 
 class CheckboxWidget {
 
-  static double total = 0.0;
   double amount;
   String description;
   bool checked = false;
@@ -15,7 +41,7 @@ class CheckboxWidget {
     this.description,
   );
 
-  Widget getCheckboxWidget(State<CheckboxPage> state) {
+  Widget getCheckboxWidget(State<CheckboxPage> state, CheckboxList list) {
     
     final _itemText = TextEditingController(text: description);
     final _priceText = TextEditingController(text: amount.toStringAsFixed(2));
@@ -24,11 +50,16 @@ class CheckboxWidget {
 
     return InkWell(
       onTap: () {
-        state.setState(() {
-          checked = !checked;
-          toggleChecked(checked!);
-          print(total);
-        });
+        editMode
+          ? ()
+          : state.setState(() {
+            checked = !checked;
+            if(checked) {
+              list.total += amount;
+            } else {
+              list.total -= amount; 
+            }
+          });
       },
       child: Padding (
         padding: EdgeInsets.all(5),
@@ -71,6 +102,13 @@ class CheckboxWidget {
                   state.setState(() {
                     editMode = false;
                     description = _itemText.text;
+                    double oldAmt = amount;
+                    amount = double.parse(_priceText.text);
+                    amount = double.parse(amount.toStringAsFixed(2));
+                    if(checked) {
+                      list.total -= oldAmt;
+                      list.total += amount;
+                    } 
                   });
                 }
               ),
@@ -118,24 +156,17 @@ class CheckboxWidget {
                     Icons.remove_circle_outline_outlined
                   ),
                   onPressed: () {
-
+                    state.setState(() {
+                      list.total -= amount;
+                      list.removeCheckbox(this);
+                    });
                   }
                 ),
                 
-                //Include Item or not
-                Checkbox(
-                  value: checked,
-                  onChanged: (newValue) {
-                    state.setState(() {
-                      toggleChecked(newValue!);
-                      print(total);
-                    });
-                  },
-                ),
                 //Edit Price of item
                 SizedBox(
                   height: 40,
-                  width: 50,
+                  width: 80,
                   child: TextFormField (
                     textAlignVertical: TextAlignVertical.center,
                     key: _priceState,
@@ -160,23 +191,17 @@ class CheckboxWidget {
             : Row(
               children: [ 
                 
-                //Delete button
-                IconButton(
-                  icon: const Icon(
-                    Icons.remove_circle_outline_outlined
-                  ),
-                  onPressed: () {
-
-                  }
-                ),
-                
                 //Include Item or not
                 Checkbox(
                   value: checked,
                   onChanged: (newValue) {
                     state.setState(() {
-                      toggleChecked(newValue!);
-                      print(total);
+                      checked = !checked;
+                      if(checked) {
+                        list.total += amount;
+                      } else {
+                        list.total -= amount; 
+                      }
                     });
                   },
                 ),
@@ -193,32 +218,4 @@ class CheckboxWidget {
       ),
     );
   }
-
-  void updateAmount(double amount) {
-    this.amount = amount;
-  }
-
-  void updateDescription(String desc) {
-    description = desc;
-  }
-
-  void toggleChecked(bool checked) {
-    this.checked = checked;
-    if(checked){
-      addTotal(amount);
-    } else {
-      subTotal(amount);
-    }
-  }
-  static double getTotal(){
-    return total; 
-  }
-  static void addTotal(double value) {
-    total += value;
-  }
-
-  static void subTotal(double value) {
-    total -= value;
-  }
-
 }

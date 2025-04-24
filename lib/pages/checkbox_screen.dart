@@ -17,7 +17,7 @@ class _CheckboxPageState extends State<CheckboxPage> {
 
   String _imageText = 'Text could not be found in this image';
   
-  List<CheckboxWidget> _items = [CheckboxWidget(1.538, "hello"),CheckboxWidget(2, "test"),CheckboxWidget(3, "hello1"),CheckboxWidget(1, "test1"),CheckboxWidget(1, "hello2"),CheckboxWidget(0, "test2"),CheckboxWidget(0, "hello3"),CheckboxWidget(0, "test3"),CheckboxWidget(0, "hello"),CheckboxWidget(0, "test"),CheckboxWidget(0, "hello"),CheckboxWidget(0, "test")];
+  final CheckboxList _items = CheckboxList();
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,14 +77,14 @@ class _CheckboxPageState extends State<CheckboxPage> {
 
               //List of receipt items
               Expanded(
-                child: _items.isEmpty
+                child: _items.size == 0
                   ? Text("No items found in this image")
                   : Padding(
                       padding: EdgeInsets.symmetric(vertical: 10),
                       child: ListView.builder(
-                        itemCount: _items.length,
+                        itemCount: _items.size,
                         itemBuilder: (BuildContext context, int index) {
-                          return _items[index].getCheckboxWidget(this);
+                          return _items.getCheckbox(index).getCheckboxWidget(this, _items);
                         },
                       ),
                     ),
@@ -105,14 +105,14 @@ class _CheckboxPageState extends State<CheckboxPage> {
                       ),
                       onPressed: () {
                         setState(() {
-                          _items.add(CheckboxWidget(0,"Item"));
+                          _items.addCheckbox(CheckboxWidget(0,"Item"));
                         });
                       },
                     ),
 
                     //Display total of checked items
                     Text(
-                      "Total: \$${CheckboxWidget.getTotal().toStringAsFixed(2)}",
+                      "Total: \$${_items.total.toStringAsFixed(2)}",
                       style: Theme.of(context).textTheme.headlineMedium, 
                     ),
                   ],

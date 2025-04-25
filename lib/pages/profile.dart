@@ -17,7 +17,7 @@ class _ProfilePageState extends State<ProfilePage> {
   final _authService = authService.value;
   final _dbService = dbService.value;
   late User? user;
-  String username = "Loading...";
+  String username = "";
   //Moves the page to login if you are not 
   void movePage() async {
     await Future.delayed(const Duration(milliseconds: 10));
@@ -37,8 +37,11 @@ class _ProfilePageState extends State<ProfilePage> {
         body: Center(child: CircularProgressIndicator())
       );
     }
-    if(username == "Loading...") {
+    if(username == "") {
       _dbService.getUsername(user!.uid).then((value) {setState(() {username = value;});});
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator())
+      );
     }
     return Scaffold(
       body: _buildUI(),
@@ -55,8 +58,11 @@ class _ProfilePageState extends State<ProfilePage> {
               size: MediaQuery.sizeOf(context).height *.25
             ),
           ),
-          Text(
-            username
+          Expanded(
+            child: Text(
+              username,
+              style: Theme.of(context).textTheme.headlineLarge,
+            ),
           ),
           ElevatedButton.icon(
             onPressed: () {

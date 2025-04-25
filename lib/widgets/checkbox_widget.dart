@@ -215,8 +215,8 @@ class CheckboxWidget {
                     ]).call,
                     decoration: InputDecoration(
                       contentPadding: EdgeInsets.all(3),
-                      hintText: 'Item', 
-                      labelText: 'Item', 
+                      hintText: 'Cost', 
+                      labelText: 'Cost', 
                       errorStyle: TextStyle(fontSize: 10.0), 
                       border: OutlineInputBorder( 
                         borderSide: BorderSide(color: Colors.red), 

@@ -46,12 +46,14 @@ class _LoginPageState extends State<LoginPage> with WidgetsBindingObserver {
               top: 10,
             ),
             child: Center(
-              child: const Text(
-                'Receiptify',
-                style: TextStyle( 
-                  color: Color.fromARGB(255, 240, 235, 216),
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
+              child: RichText(
+                text: TextSpan(
+                  text: 'Receiptify',
+                  style: Theme.of(context).textTheme.headlineLarge,
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      context.go('/');
+                    }
                 )
               ),
             ),

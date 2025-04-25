@@ -65,11 +65,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
           ElevatedButton.icon(
-            onPressed: () {
-              setState(() async {
-                await _authService.signOut();
-                setState(() {});
-              });
+            onPressed: () async {
+              await _authService.signOut();
+              setState(() {});
             },
             icon: Icon(Icons.logout),
             label: Text('Logout'),

@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
 import '../services/db_service.dart';
-import '../services/password_validator.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});

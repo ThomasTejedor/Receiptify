@@ -9,7 +9,6 @@ class UsernameValidator extends TextFieldValidator {
 
   @override
   bool isValid(String? value) {
-    print(userAvail);
     return userAvail;
   }
 }

@@ -23,7 +23,7 @@ class OcrService {
             try{
               list.add(CheckboxWidget(double.parse(items.text.substring(1)), "Item"));
             } catch (error){
-              print(error);
+              //error occured
             }
           }
         }

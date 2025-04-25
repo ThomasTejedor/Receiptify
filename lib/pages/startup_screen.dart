@@ -19,6 +19,7 @@ class StartupPage extends StatefulWidget {
 class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
   List<CameraDescription> cameras = [];
   CameraController? cameraController; 
+  bool _isBusy = false;
   
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -42,6 +43,12 @@ class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
+
+    if(_isBusy) {
+      return Scaffold (
+        body: Center(child: CircularProgressIndicator())
+      );
+    }
     return Scaffold(
       body: _buildUI(),
     );
@@ -91,11 +98,18 @@ class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
                           picture.path,
                         );
                         File userPicture = File(picture.path);
+                        setState(() {
+                          _isBusy = true;
+                        });
                         List<CheckboxWidget>? list = await OcrService.processImage(userPicture); 
                         PassData myData = PassData(userPicture, list);
+                        setState(() {
+                          _isBusy = false;
+                        });
                         if(mounted) {
                           context.push('/checkbox', extra: myData);
                         }
+                        
                       },
                       iconSize: MediaQuery.sizeOf(context).height *.10,
                       icon: const Icon(
@@ -111,7 +125,13 @@ class _StartupPageState extends State<StartupPage> with WidgetsBindingObserver {
                       await ImagePicker().pickImage(source: ImageSource.gallery);
                     if(pickedFile != null) {
                       File userPicture = File(pickedFile.path);
+                      setState(() {
+                        _isBusy = true;
+                      });
                       List<CheckboxWidget>? list = await OcrService.processImage(userPicture); 
+                      setState(() {
+                        _isBusy = false;
+                      });
                       PassData myData = PassData(userPicture, list);
                       if(mounted) {
                         context.push('/checkbox', extra: myData);

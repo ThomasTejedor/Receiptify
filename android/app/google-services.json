@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "40815536348",
+    "project_id": "receiptify-7ff3f",
+    "storage_bucket": "receiptify-7ff3f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40815536348:android:7323f96d9d760ecbd5ac19",
+        "android_client_info": {
+          "package_name": "com.example.receiptify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBU7Q6v_LT04JIEPjsoJUKSD2N-7DZrGHk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:40815536348:android:2f385400d197847ed5ac19",
+        "android_client_info": {
+          "package_name": "com.receiptify.receiptify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBU7Q6v_LT04JIEPjsoJUKSD2N-7DZrGHk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
